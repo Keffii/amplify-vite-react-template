@@ -109,8 +109,7 @@ function App() {
       <h3>Space Invaders Game</h3>
       <Button
         variation="primary"
-        as="a"
-        href="/game/index.html"
+        onClick={() => window.location.href = '/game/index.html'}
       >
         Play Space Invaders
       </Button>
