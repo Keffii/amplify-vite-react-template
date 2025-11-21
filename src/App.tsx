@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import SpaceInvadersGame from "./SpaceInvadersGame";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 
@@ -106,7 +105,16 @@ function App() {
         )}
       </Collection>
       <View padding="xs"></View>
-      <SpaceInvadersGame mode="link" />
+      <Divider padding="xs" />
+      <h3>Space Invaders Game</h3>
+      <Button
+        variation="primary"
+        as="a"
+        href="/game/index.html"
+      >
+        Play Space Invaders
+      </Button>
+      <View padding="xs"></View>
       <button onClick={signOut}>Sign out</button>
     </main>
   );
