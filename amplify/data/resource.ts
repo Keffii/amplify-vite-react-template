@@ -20,7 +20,7 @@ const schema = a.schema({
    - `owner`: string, intended to store the owner/user id (required by your app logic).
    - `status`: optional string (e.g. "online", "offline", etc.).
   */
-  Devices: a
+  Device: a
     .model({
       device_id: a.id().required(), //primary key
       owner: a.string().required(),
