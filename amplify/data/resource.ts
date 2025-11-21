@@ -12,6 +12,21 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.owner()]),
+  
+  /* Devices table
+   - `device_id`: the device identifier (string). To *use* this as the primary key you can set
+     the model `id` to the device_id when creating items (see notes below), or add a custom
+     primary key/index via your Amplify backend definitions before deploy.
+   - `owner`: string, intended to store the owner/user id (required by your app logic).
+   - `status`: optional string (e.g. "online", "offline", etc.).
+  */
+  Device: a
+    .model({
+      device_id: a.string(),
+      owner: a.string(),
+      status: a.string(),
+    })
+    .authorization((allow) => [allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -19,7 +34,7 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'userPool',
+    defaultAuthorizationMode: "userPool",
     // API Key is used for a.allow.public() rules
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
