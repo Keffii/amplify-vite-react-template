@@ -56,7 +56,7 @@ function handleBulletEnemyCollisions() {
         // remove enemy and add score/XP
         enemies.splice(ei, 1);
         score += 10;
-        addXP(50); // add 50 XP per enemy hit
+        addXP(10); //add 10 XP per enemy hit
 
         // remove bullet if not piercing
         if (!piercing) {

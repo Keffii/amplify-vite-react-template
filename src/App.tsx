@@ -14,12 +14,15 @@ import {
   View
 } from '@aws-amplify/ui-react';
 
+import SpaceInvadersGame from './SpaceInvadersGame';
+
 const client = generateClient<Schema>();
 
 
 function App() {
 
   const { user, signOut } = useAuthenticator();
+  const [showGame, setShowGame] = useState(false);
 
   const [devices, setDevices] = useState<Array<Schema["Device"]["type"]>>([]);
   useEffect(() => {
@@ -57,64 +60,76 @@ function App() {
 
   return (
     <main>
-      <h1>{user?.signInDetails?.loginId}'s Devices</h1>
-      <Divider padding="xs" />
-      <h3>Devices</h3>
-      {
-        <Button
-          variation="primary"
-          loadingText=""
-          onClick={createDevice}
-        >
-          Add Device
-        </Button>
-      }
-      <Divider padding="xs" />
-
-      <Collection
-        items={devices}
-        type="list"
-        direction="row"
-        gap="20px"
-        wrap="nowrap"
-      >
-        {(item, index) => (
-          <Card
-            key={index}
-            borderRadius="medium"
-            maxWidth="20rem"
-            variation="outlined"
+      {!showGame ? (
+        <>
+          <h1>{user?.signInDetails?.loginId}'s Devices</h1>
+          <Divider padding="xs" />
+          <h3>Devices</h3>
+          <Button
+            variation="primary"
+            loadingText=""
+            onClick={createDevice}
           >
-            <View padding="xs">
-              <Flex>
-                {/* Last Seen: {telemetries[telemetries.length - 1]?.timestamp ? moment(telemetries[telemetries.length - 1].timestamp).fromNow() : ""} */}
-              </Flex>
-              <Flex>
-                Status:
-                <Badge variation={(item?.status == "connected") ? "success" : "error"} key={item.device_id}>
-                  {item?.status ? item?.status.charAt(0).toUpperCase() + String(item?.status).slice(1) : ""}
-                </Badge>
-              </Flex>
-              <Divider padding="xs" />
-              <Heading padding="medium">ID: {item.device_id}</Heading>
-              <Button variation="destructive" isFullWidth onClick={() => deleteDevice(item.device_id)}>
-                Delete
-              </Button>
-            </View>
-          </Card>
-        )}
-      </Collection>
-      <View padding="xs"></View>
-      <Divider padding="xs" />
-      <h3>Space Invaders Game</h3>
-      <Button
-        variation="primary"
-        onClick={() => window.location.href = '/game/index.html'}
-      >
-        Play Space Invaders
-      </Button>
-      <View padding="xs"></View>
-      <button onClick={signOut}>Sign out</button>
+            Add Device
+          </Button>
+          <Divider padding="xs" />
+
+          <Collection
+            items={devices}
+            type="list"
+            direction="row"
+            gap="20px"
+            wrap="nowrap"
+          >
+            {(item, index) => (
+              <Card
+                key={index}
+                borderRadius="medium"
+                maxWidth="20rem"
+                variation="outlined"
+              >
+                <View padding="xs">
+                  <Flex>
+                    Status:
+                    <Badge variation={(item?.status == "connected") ? "success" : "error"} key={item.device_id}>
+                      {item?.status ? item?.status.charAt(0).toUpperCase() + String(item?.status).slice(1) : ""}
+                    </Badge>
+                  </Flex>
+                  <Divider padding="xs" />
+                  <Heading padding="medium">ID: {item.device_id}</Heading>
+                  <Button variation="destructive" isFullWidth onClick={() => deleteDevice(item.device_id)}>
+                    Delete
+                  </Button>
+                </View>
+              </Card>
+            )}
+          </Collection>
+          <View padding="xs"></View>
+          <Divider padding="xs" />
+          <h3>Space Invaders Game</h3>
+          <Button
+            variation="primary"
+            onClick={() => setShowGame(true)}
+          >
+            🎮 Play Space Invaders
+          </Button>
+          <View padding="xs"></View>
+          <Divider padding="xs" />
+          <button onClick={signOut}>Sign out</button>
+        </>
+      ) : (
+        <>
+          <Button
+            variation="link"
+            onClick={() => setShowGame(false)}
+          >
+            ← Back to Devices
+          </Button>
+          <SpaceInvadersGame username={user?.signInDetails?.loginId || user?.username} />
+          <Divider padding="xs" />
+          <button onClick={signOut}>Sign out</button>
+        </>
+      )}
     </main>
   );
 }
