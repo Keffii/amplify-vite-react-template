@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import SpaceInvadersGame from "./SpaceInvadersGame";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 
@@ -89,6 +88,7 @@ function App() {
             <View padding="xs">
               <Flex>
                 {/* Last Seen: {telemetries[telemetries.length - 1]?.timestamp ? moment(telemetries[telemetries.length - 1].timestamp).fromNow() : ""} */}
+
               </Flex>
               <Flex>
                 Status:
@@ -106,7 +106,6 @@ function App() {
         )}
       </Collection>
       <View padding="xs"></View>
-      <SpaceInvadersGame mode="link" />
       <button onClick={signOut}>Sign out</button>
     </main>
   );
