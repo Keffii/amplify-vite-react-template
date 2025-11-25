@@ -87,6 +87,12 @@ function handleEnemyBottomOrPlayerHit() {
 
 function gameOver() {
   gameState = "gameover";
+
+  // Send Score to react component
+  window.parent.postMessage({
+    type: 'Game_OVER',
+    score: score,
+  }, '*');
 }
 
 function restartGame() {

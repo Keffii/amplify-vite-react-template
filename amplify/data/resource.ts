@@ -37,19 +37,13 @@ const schema = a.schema({
     .identifier(['device_id', 'timestamp'])
     .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  HighScore: a
+    .model({
+      username: a.string().required(),
+      score: a.integer().required(),
+      timestamp: a.timestamp().required()
+    })
+    .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
 
   AddTelemetry: a
     .mutation()

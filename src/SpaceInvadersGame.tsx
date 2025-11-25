@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Card, Heading, Text, Flex } from '@aws-amplify/ui-react';
 // Import the Amplify Gen 2 data client generator for making database requests
-// @ts-ignore - Will be used when implementing database queries
 import { generateClient } from 'aws-amplify/data';
 // Import the TypeScript schema types generated from amplify/data/resource.ts
-// @ts-ignore - Will be used when implementing database queries
 import type { Schema } from '../amplify/data/resource';
 
 // Create a typed client instance to interact with the Amplify Data (GraphQL API)
-// @ts-ignore - Client will be used when implementing database queries
 const client = generateClient<Schema>();
 
 interface LeaderboardEntry {
@@ -25,12 +22,31 @@ const SpaceInvadersGame: React.FC<{ username?: string }> = ({ username }) => {
   const [highScore] = useState(0);
   const [activePlayerCount] = useState(0);
 
-  // TODO: Fetch leaderboard data from database
+  // TODO: Fetch high score from database
+  const saveHighScore = async (username: string, score: number) => {
+    await client.models.HighScore.create({
+      username,
+      score,
+      timestamp: Date.now()
+    })
+  }
+
+useEffect(() => {
+    const handleGameMessage = (event: MessageEvent) => {
+      if (event.data.type === 'GAME_OVER' && username) {
+        saveHighScore(username || 'Anonymous', event.data.score);
+      }
+    }
+    window.addEventListener('message', handleGameMessage);
+    return () => {
+      window.removeEventListener('message', handleGameMessage);
+    };
+  }, [username]);
 
   // TODO: Track active players from database
 
-  // TODO: Fetch high score from database
 
+  // TODO: Fetch leaderboard data from database
   return (
     <View padding="1rem">
       <Flex direction="row" gap="1rem" wrap="nowrap" justifyContent="space-between" alignItems="flex-start">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import moment from 'moment';
 
 import {
   Badge,
@@ -25,9 +26,15 @@ function App() {
   const [showGame, setShowGame] = useState(false);
 
   const [devices, setDevices] = useState<Array<Schema["Device"]["type"]>>([]);
+  const [telemetries, setTelemetries] = useState<Array<Schema["Telemetry"]["type"]>>([]);
+  
   useEffect(() => {
     client.models.Device.observeQuery().subscribe({
       next: (data) => { setDevices([...data.items]) },
+    });
+    
+    client.models.Telemetry.observeQuery().subscribe({
+      next: (data) => { setTelemetries([...data.items]) },
     });
   }, []);
 
@@ -89,11 +96,24 @@ function App() {
                 variation="outlined"
               >
                 <View padding="xs">
-                  <Flex>
-                    Status:
-                    <Badge variation={(item?.status == "connected") ? "success" : "error"} key={item.device_id}>
-                      {item?.status ? item?.status.charAt(0).toUpperCase() + String(item?.status).slice(1) : ""}
-                    </Badge>
+                  <Flex direction="column" gap="small">
+                    <div>
+                      Last Seen: {
+                        (() => {
+                          const deviceTelemetries = telemetries.filter(t => t.device_id === item.device_id);
+                          const latestTelemetry = deviceTelemetries[deviceTelemetries.length - 1];
+                          return latestTelemetry?.timestamp 
+                            ? moment(latestTelemetry.timestamp * 1000).fromNow() 
+                            : "Never";
+                        })()
+                      }
+                    </div>
+                    <Flex>
+                      Status:
+                      <Badge variation={(item?.status == "connected") ? "success" : "error"} key={item.device_id}>
+                        {item?.status ? item?.status.charAt(0).toUpperCase() + String(item?.status).slice(1) : ""}
+                      </Badge>
+                    </Flex>
                   </Flex>
                   <Divider padding="xs" />
                   <Heading padding="medium">ID: {item.device_id}</Heading>
