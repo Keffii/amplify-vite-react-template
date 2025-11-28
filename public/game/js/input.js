@@ -37,3 +37,24 @@ window.addEventListener("keyup", e => {
   if (e.key === "ArrowRight" || e.key === "d") input.right = false;
   // selectNext & confirm clear in powerups.js after use
 });
+
+// ESP32 Button Input via postMessage
+window.addEventListener("message", (event) => {
+  if (event.data.type === "ESP32_BUTTON") {
+    const { btn, action } = event.data;
+    
+    if (btn === "LEFT") {
+      input.left = (action === "press");
+    } else if (btn === "RIGHT") {
+      input.right = (action === "press");
+    } else if (btn === "CONFIRM") {
+      if (action === "press") {
+        input.confirm = true;
+        // Restart game on CONFIRM press if in gameover state
+        if (gameState === "gameover") {
+          restartGame();
+        }
+      }
+    }
+  }
+});

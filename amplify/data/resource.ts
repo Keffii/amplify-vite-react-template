@@ -11,12 +11,6 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  // Todo: a
-  //  .model({
-  //    content: a.string(),
-  //  })
-  //  .authorization((allow) => [allow.owner()]),
-
   Device: a
     .model({
       device_id: a.string().required(),
@@ -26,13 +20,14 @@ const schema = a.schema({
     .identifier(['device_id'])
     .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
 
-  Telemetry: a
+  ButtonEvents: a
     .model({
       device_id: a.string().required(),
+      owner: a.string().required(),
+      btn: a.string().required(),
+      action: a.string().required(),
+      ts: a.integer().required(),
       timestamp: a.timestamp().required(),
-      temperature: a.float(),
-      humidity: a.float(),
-      owner: a.string().required()
     })
     .identifier(['device_id', 'timestamp'])
     .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
@@ -45,17 +40,18 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
 
-  AddTelemetry: a
+  AddButtonEvents: a
     .mutation()
     .arguments({
       device_id: a.string().required(),
+      owner: a.string().required(),
+      btn: a.string().required(),
+      action: a.string().required(),
+      ts: a.integer().required(),
       timestamp: a.timestamp().required(),
-      temperature: a.float(),
-      humidity: a.float(),
-      owner: a.string().required()
     }
     )
-    .returns(a.ref("Telemetry"))
+    .returns(a.ref("ButtonEvents"))
     .authorization((allow) => [allow.publicApiKey()])
     .handler(a.handler.function(iotCoreHandler)),
 });

@@ -26,14 +26,14 @@ function App() {
   const [showGame, setShowGame] = useState(false);
 
   const [devices, setDevices] = useState<Array<Schema["Device"]["type"]>>([]);
-  const [telemetries, setTelemetries] = useState<Array<Schema["Telemetry"]["type"]>>([]);
+  const [telemetries, setTelemetries] = useState<Array<Schema["ButtonEvents"]["type"]>>([]);
   
   useEffect(() => {
     client.models.Device.observeQuery().subscribe({
       next: (data) => { setDevices([...data.items]) },
     });
     
-    client.models.Telemetry.observeQuery().subscribe({
+    client.models.ButtonEvents.observeQuery().subscribe({
       next: (data) => { setTelemetries([...data.items]) },
     });
   }, []);
@@ -46,24 +46,6 @@ function App() {
   function deleteDevice(device_id: string) {
     client.models.Device.delete({ device_id })
   }
-
-
-  //const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
-  //useEffect(() => {
-  // client.models.Todo.observeQuery().subscribe({
-  //   next: (data) => setTodos([...data.items]),
-  // });
-  //}, []);
-
-  // function createTodo() {
-  //client.models.Todo.create({ content: window.prompt("Todo content") });
-  //}
-
-
-  //function deleteTodo(id: string) {
-  //client.models.Todo.delete({ id })
-  // }
 
   return (
     <main>
@@ -131,7 +113,7 @@ function App() {
             variation="primary"
             onClick={() => setShowGame(true)}
           >
-            🎮 Play Space Invaders
+            Play Space Invaders
           </Button>
           <View padding="xs"></View>
           <Divider padding="xs" />

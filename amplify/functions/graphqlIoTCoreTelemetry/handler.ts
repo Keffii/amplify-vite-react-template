@@ -60,7 +60,7 @@ export const handler: Handler = async (event, context) => {
         };
     }
 
-    // if the device exists and a owner is found, add the telemetry
+    // if the device exists and a owner is found, add the button event
     if (responseBody.data.getDevice?.owner) {
         // Mutate
         request = new Request(GRAPHQL_ENDPOINT, {
@@ -68,20 +68,22 @@ export const handler: Handler = async (event, context) => {
             headers: headers,
             body: JSON.stringify({
                 query: `mutation MyMutation {
-                    createTelemetry(input: {
+                    createButtonEvents(input: {
                         device_id: "${event.device_id}", 
-                        temperature: ${event.temperature}, 
+                        btn: "${event.btn}", 
+                        action: "${event.action}", 
                         owner: "${responseBody.data.getDevice.owner}", 
-                        humidity: ${event.humidity}, 
-                        timestamp: ${event.timestamp}
+                        ts: ${event.ts}, 
+                        timestamp: ${Date.now()}
                         }) 
                     {
-                        temperature
-                        humidity
+                        device_id
+                        btn
+                        action
+                        ts
                         owner
                         createdAt
                         updatedAt
-                        device_id
                         timestamp
                     }
                 }

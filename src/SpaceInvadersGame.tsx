@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Card, Heading, Text, Flex } from '@aws-amplify/ui-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Card, Heading, Text, Flex, TextField, Button, Badge } from '@aws-amplify/ui-react';
 // Import the Amplify Gen 2 data client generator for making database requests
 import { generateClient } from 'aws-amplify/data';
 // Import the TypeScript schema types generated from amplify/data/resource.ts
 import type { Schema } from '../amplify/data/resource';
+import { useIoTButtonInput } from './hooks/useIoTButtonInput';
 
 // Create a typed client instance to interact with the Amplify Data (GraphQL API)
 const client = generateClient<Schema>();
@@ -13,6 +14,12 @@ const client = generateClient<Schema>();
  */
 const SpaceInvadersGame: React.FC<{ username?: string }> = ({ username }) => {
   const [highScores, setHighScores] = useState<Array<Schema["HighScore"]["type"]>>([]);
+  const [esp32DeviceId, setEsp32DeviceId] = useState('ECE334663DD4');
+  const [iotEnabled, setIotEnabled] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // ESP32 button input hook
+  useIoTButtonInput(esp32DeviceId, iframeRef, iotEnabled);
 
   const saveHighScore = async (username: string, score: number) => {
     await client.models.HighScore.create({
@@ -45,20 +52,53 @@ useEffect(() => {
 
 
   // TODO: Fetch leaderboard data from database
+  const handleConnectESP32 = () => {
+    console.log('[ESP32] Connecting...');
+    setIotEnabled(true);
+  };
+
+  const handleDisconnectESP32 = () => {
+    console.log('[ESP32] Disconnecting...');
+    setIotEnabled(false);
+  };
+
   return (
     <View padding="1rem">
       <Flex direction="row" gap="1rem" wrap="nowrap" justifyContent="space-between" alignItems="flex-start">
-        {/* Leaderboard Card - Far Left */}
-        <Card variation="outlined" width="200px" height="940px">
-          <Heading level={4}>Leaderboard</Heading>
-          <Text fontSize="0.9rem">#1, User1: 24</Text>
-          <Text fontSize="0.9rem">#1, User2: 24</Text>
-          <Text fontSize="0.9rem">#2, User3: 18</Text>
+        {/* ESP32 Controller Card - Far Left */}
+        <Card variation="outlined" width="200px">
+          <Heading level={4}>ESP32 Controller</Heading>
+          
+          <TextField
+            label="Device ID"
+            value={esp32DeviceId}
+            onChange={(e) => setEsp32DeviceId(e.target.value)}
+            placeholder="ECE334663DD4"
+            disabled={iotEnabled}
+          />
+          
+          {!iotEnabled ? (
+            <Button onClick={handleConnectESP32} variation="primary" width="100%">
+              Connect
+            </Button>
+          ) : (
+            <>
+              <Badge variation="success">Connected</Badge>
+              <Button onClick={handleDisconnectESP32} variation="warning" width="100%">
+                Disconnect
+              </Button>
+            </>
+          )}
+          
+          <Text fontSize="0.8rem" color="gray">
+            Topic: {esp32DeviceId}/events/button
+          </Text>
         </Card>
 
         {/* Game in iframe - Center */}
         <View>
           <iframe
+            ref={iframeRef}
             src="/game/index.html"
             title="Space Invaders Game"
             width="800"
