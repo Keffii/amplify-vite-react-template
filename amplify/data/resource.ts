@@ -49,8 +49,7 @@ const schema = a.schema({
       action: a.string().required(),
       ts: a.integer().required(),
       timestamp: a.timestamp().required(),
-    }
-    )
+    })
     .returns(a.ref("ButtonEvents"))
     .authorization((allow) => [allow.publicApiKey()])
     .handler(a.handler.function(iotCoreHandler)),

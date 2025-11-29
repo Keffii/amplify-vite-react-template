@@ -13,6 +13,9 @@ export const handler: Handler = async (event, context) => {
     console.log(`GRAPHQL_API_KEY: ${GRAPHQL_API_KEY}`);
     console.log(`AMPLIFY_SSM_ENV_CONFIG: ${AMPLIFY_SSM_ENV_CONFIG}`);
 
+    // Extract device_id from topic (e.g., "ECE334663DD4/events/button" -> "ECE334663DD4")
+    const device_id = event.topic ? event.topic.split('/')[0] : 'ECE334663DD4';
+    console.log(`Extracted device_id: ${device_id}`);
 
     let statusCode = 200;
     let response;
@@ -32,7 +35,7 @@ export const handler: Handler = async (event, context) => {
         headers: headers,
         body: JSON.stringify({
             query: `query MyQuery {
-                        getDevice(device_id: "${event.device_id}") {
+                        getDevice(device_id: "${device_id}") {
                             device_id
                             owner
                         }
@@ -69,7 +72,7 @@ export const handler: Handler = async (event, context) => {
             body: JSON.stringify({
                 query: `mutation MyMutation {
                     createButtonEvents(input: {
-                        device_id: "${event.device_id}", 
+                        device_id: "${device_id}", 
                         btn: "${event.btn}", 
                         action: "${event.action}", 
                         owner: "${responseBody.data.getDevice.owner}", 

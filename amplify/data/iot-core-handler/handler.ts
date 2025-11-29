@@ -1,14 +1,16 @@
 import type { Schema } from '../resource'
 
 export const handler: Schema["AddButtonEvents"]["functionHandler"] = async (event, context) => {
+    const args = event.arguments;
     return {
-        device_id: event.arguments.device_id,
-        owner: event.arguments.owner,
-        btn: event.arguments.btn,
-        action: event.arguments.action,
-        ts: event.arguments.ts,
-        timestamp: event.arguments.timestamp,
-        createdAt: new Date(event.arguments.timestamp).toISOString(),
-        updatedAt: new Date(event.arguments.timestamp).toISOString(),
+        id: `${args.device_id}#${args.timestamp}`,
+        device_id: args.device_id,
+        owner: args.owner,
+        btn: args.btn,
+        action: args.action,
+        ts: args.ts,
+        timestamp: args.timestamp,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
     };
 };
