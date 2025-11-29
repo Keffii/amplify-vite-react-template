@@ -9,7 +9,7 @@ import { Hub } from 'aws-amplify/utils';
 
 interface ButtonEvent {
   btn: 'LEFT' | 'RIGHT' | 'CONFIRM';
-  action: 'press' | 'release';
+  action: 'press' | 'release' | 'held';
   ts: number;
 }
 
@@ -147,14 +147,18 @@ export const useIoTButtonInput = (
                 timestamp: payload.ts
               });
 
-              // Forward to game iframe only if state actually changed
-              // Track last known state to filter out duplicates
+              // Forward to game iframe
+              // Track last known state to filter press/release duplicates but allow held events
               const stateKey = `${payload.btn}_state`;
               const lastState = (iframeRef.current as any)[stateKey];
-              const currentState = payload.action === 'press';
+              const currentState = payload.action === 'press' || payload.action === 'held';
               
-              if (lastState !== currentState) {
-                (iframeRef.current as any)[stateKey] = currentState;
+              // Always forward 'held' actions for continuous movement
+              // Only forward press/release if state changed
+              if (payload.action === 'held' || lastState !== currentState) {
+                if (payload.action !== 'held') {
+                  (iframeRef.current as any)[stateKey] = currentState;
+                }
                 
                 if (iframeRef.current?.contentWindow) {
                   iframeRef.current.contentWindow.postMessage({

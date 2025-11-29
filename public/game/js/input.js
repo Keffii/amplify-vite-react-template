@@ -44,9 +44,9 @@ window.addEventListener("message", (event) => {
     const { btn, action } = event.data;
     
     if (btn === "LEFT") {
-      input.left = (action === "press");
+      input.left = (action === "press" || action === "held");
     } else if (btn === "RIGHT") {
-      input.right = (action === "press");
+      input.right = (action === "press" || action === "held");
     } else if (btn === "CONFIRM") {
       if (action === "press") {
         input.confirm = true;
