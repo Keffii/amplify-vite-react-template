@@ -85,24 +85,29 @@ useEffect(() => {
     setIotEnabled(false);
   };
 
-  // Compute leaderboard: top 10 unique scores across all users
+  // Compute leaderboard: top 5 scores per user, then show global top 20
   const leaderboard = React.useMemo(() => {
-    // Group scores by user and get their best score
-    // Use the Amplify 'owner' field when present so different owners with the same
-    // username are not collapsed into one entry. Fallback to username when owner
-    // isn't available.
-    const userBestScores = highScores.reduce((acc, entry) => {
+    // Group scores by user (using owner field)
+    const scoresByUser = highScores.reduce((acc, entry) => {
       const ownerId = ((entry as any).owner as string) || entry.username;
-      if (!acc[ownerId] || acc[ownerId].score < entry.score) {
-        acc[ownerId] = entry;
+      if (!acc[ownerId]) {
+        acc[ownerId] = [];
       }
+      acc[ownerId].push(entry);
       return acc;
-    }, {} as Record<string, Schema["HighScore"]["type"]>);
-    
-    // Convert to array and sort by score descending
-    return Object.values(userBestScores)
+    }, {} as Record<string, Schema["HighScore"]["type"][]>);
+
+    // Keep only top 5 scores per user
+    const top5PerUser = Object.values(scoresByUser).flatMap(userScores =>
+      userScores
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5)
+    );
+
+    // Sort all scores and return top 20 for the global leaderboard
+    return top5PerUser
       .sort((a, b) => b.score - a.score)
-      .slice(0, 10);
+      .slice(0, 20);
   }, [highScores]);
 
   return (

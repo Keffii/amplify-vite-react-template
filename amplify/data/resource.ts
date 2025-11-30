@@ -38,7 +38,11 @@ const schema = a.schema({
       score: a.integer().required(),
       timestamp: a.timestamp().required()
     })
-    .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
+    .authorization((allow) => [
+      allow.owner(),                      // Owner can create, update, delete their own
+      allow.authenticated().to(['read']), // All logged-in users can read all scores
+      allow.publicApiKey()
+    ]),
 
   AddButtonEvents: a
     .mutation()
