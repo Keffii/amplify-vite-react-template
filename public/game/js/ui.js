@@ -44,7 +44,21 @@ function drawLevelUpMenu(ctx, canvas) {
 
   ctx.font = "14px Arial";
   ctx.fillStyle = "white";
-  ctx.fillText("Use ↓/S to cycle, Enter/E to confirm", x + 40, y + h - 30);
+  ctx.fillText("Use ←/→ to cycle, CONFIRM to select", x + 40, y + h - 30);
+}
+
+function drawStartScreen(ctx, canvas) {
+  ctx.fillStyle = "rgba(0,0,0,0.7)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "white";
+  ctx.font = "48px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("SPACE SURVIVORS", canvas.width / 2, canvas.height / 2 - 40);
+
+  ctx.font = "24px Arial";
+  ctx.fillText("Press CONFIRM to start", canvas.width / 2, canvas.height / 2 + 20);
+  ctx.textAlign = "start";
 }
 
 function drawGameOver(ctx, canvas, score) {
@@ -58,7 +72,7 @@ function drawGameOver(ctx, canvas, score) {
   ctx.font = "24px Arial";
   ctx.fillText(`Score: ${score}`, canvas.width / 2 - 60, canvas.height / 2 + 20);
   ctx.font = "18px Arial";
-  ctx.fillText("Press R to restart", canvas.width / 2 - 90, canvas.height / 2 + 60);
+  ctx.fillText("Press CONFIRM to restart", canvas.width / 2 - 115, canvas.height / 2 + 60);
 }
 
 function drawHUD(ctx, score) {

@@ -2,16 +2,16 @@
 
 let bullets = [];
 let lastShot = 0;
-let fireCooldown = 250;   // ms
-let bulletWidth = 50;
-let bulletHeight = 50;
-let bulletSpeed = 9;
+let fireCooldown;
+let bulletWidth;
+let bulletHeight;
+let bulletSpeed;
 
 function resetBullets() {
   bullets = [];
   lastShot = 0;
-  bulletWidth = 20;
-  bulletHeight = 20;
+  bulletWidth = 30;
+  bulletHeight = 30;
   bulletSpeed = 9;
   fireCooldown = 250;
 }

@@ -3,7 +3,7 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-let gameState = "playing"; // playing, levelup, gameover
+let gameState = "start"; // start, playing, levelup, gameover
 let score = 0;
 let bgImg = new Image();
 bgImg.src = "./assets/sprites/background.png";
@@ -31,7 +31,13 @@ function gameLoop(timestamp) {
 }
 
 function updateGame(dt) {
-  if (gameState === "playing") {
+  if (gameState === "start") {
+    // Wait for confirm to start
+    if (input.confirm) {
+      input.confirm = false;
+      gameState = "playing";
+    }
+  } else if (gameState === "playing") {
     updatePlayer(canvas, dt);
 
     if (canShoot()) {
@@ -44,6 +50,12 @@ function updateGame(dt) {
     handleEnemyBottomOrPlayerHit();
   } else if (gameState === "levelup") {
     handlePowerupSelection();
+  } else if (gameState === "gameover") {
+    // Wait for confirm to restart
+    if (input.confirm) {
+      input.confirm = false;
+      restartGame();
+    }
   }
 }
 
@@ -121,7 +133,9 @@ function drawGame() {
   drawXPBar(ctx, canvas);
 
   // overlays
-  if (gameState === "levelup") {
+  if (gameState === "start") {
+    drawStartScreen(ctx, canvas);
+  } else if (gameState === "levelup") {
     drawLevelUpMenu(ctx, canvas);
   } else if (gameState === "gameover") {
     drawGameOver(ctx, canvas, score);

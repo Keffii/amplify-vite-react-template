@@ -3,7 +3,6 @@
 let input = {
   left: false,
   right: false,
-  shoot: true,
   selectNext: false,  // used in powerup menu
   selectPrevious: false,  // used in powerup menu
   confirm: false      // used in powerup menu
@@ -24,7 +23,7 @@ window.addEventListener("keydown", e => {
     input.confirm = true;
   }
 
-  // restart game
+  // start or restart game
   if ((e.key === "r" || e.key === "R") && !e.repeat) {
     if (gameState === "gameover") {
       restartGame();
@@ -45,8 +44,16 @@ window.addEventListener("message", (event) => {
     
     if (btn === "LEFT") {
       input.left = (action === "press" || action === "held");
+      // Trigger selectNext using esp32 button for powerup menu navigation (on press only)
+      if (action === "press") {
+        input.selectPrevious = true;
+      }
     } else if (btn === "RIGHT") {
       input.right = (action === "press" || action === "held");
+      // Trigger selectNext using esp32 button for powerup menu navigation (on press only)
+      if (action === "press") {
+        input.selectNext = true;
+      }
     } else if (btn === "CONFIRM") {
       if (action === "press") {
         input.confirm = true;

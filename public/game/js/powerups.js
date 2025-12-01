@@ -60,6 +60,8 @@ function applyPowerup(p) {
       break;
     case "Piercing":
       piercing = true;
+      //remove from powerup pool once chosen
+      powerupPool = powerupPool.filter(p => p !== "Piercing");
       break;
     case "Faster Firerate":
       fireCooldown = Math.max(80, fireCooldown * 0.8);
