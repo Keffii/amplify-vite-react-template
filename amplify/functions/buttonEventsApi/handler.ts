@@ -1,14 +1,15 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import type { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
 const dynamo = DynamoDBDocumentClient.from(client);
 
-function floorToMinute(ts) {
+function floorToMinute(ts: number): number {
   return Math.floor(ts / 60000) * 60000;
 }
 
-export const handler = async (event) => {
+export const handler: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   const qs = event.queryStringParameters || {};
   const start = qs.start ? Number(qs.start) : Date.now() - 60 * 60 * 1000;
   const end = qs.end ? Number(qs.end) : Date.now();

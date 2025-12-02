@@ -1,10 +1,11 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import type { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
 const dynamo = DynamoDBDocumentClient.from(client);
 
-export const handler = async (event) => {
+export const handler: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   const qs = event.queryStringParameters || {};
   const limit = qs.limit ? Number(qs.limit) : 10;
   const TableName = process.env.HIGHSCORE_TABLE || 'HighScore';
