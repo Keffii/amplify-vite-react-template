@@ -7,6 +7,7 @@ interface HighScoreItem {
   username: string;
   score: number;
   timestamp: number;
+  owner?: string;
 }
 
 interface GraphQLResponse {
@@ -21,7 +22,8 @@ interface GraphQLResponse {
 
 export const handler: APIGatewayProxyHandler = async (event): Promise<APIGatewayProxyResult> => {
   const qs = event.queryStringParameters || {};
-  const limit = qs.limit ? Number(qs.limit) : 10;
+  // Default to top 5 unique owners for leaderboard use
+  const limit = qs.limit ? Number(qs.limit) : 5;
 
   const query = `
     query ListHighScores($nextToken: String) {
@@ -30,6 +32,7 @@ export const handler: APIGatewayProxyHandler = async (event): Promise<APIGateway
           username
           score
           timestamp
+          owner
         }
         nextToken
       }
@@ -70,9 +73,28 @@ export const handler: APIGatewayProxyHandler = async (event): Promise<APIGateway
     return { statusCode: 500, body: JSON.stringify({ error: 'fetch error' }) };
   }
 
-  // Sort by score descending and take top N
-  items.sort((a, b) => (b.score || 0) - (a.score || 0));
-  const top = items.slice(0, limit);
+  // Deduplicate by owner (fallback to username) so each owner has only one entry.
+  // Keep the highest score per owner; on tie keep the newest timestamp.
+  const byOwner = new Map<string, HighScoreItem>();
+  for (const it of items) {
+    if (!it) continue;
+    const key = it.owner ?? it.username;
+    if (!key) continue;
+    const existing = byOwner.get(key);
+    if (!existing) {
+      byOwner.set(key, it);
+      continue;
+    }
+
+    // Replace if this item has a higher score, or same score but newer timestamp
+    if ((it.score || 0) > (existing.score || 0) || ((it.score || 0) === (existing.score || 0) && (it.timestamp || 0) > (existing.timestamp || 0))) {
+      byOwner.set(key, it);
+    }
+  }
+
+  const unique = Array.from(byOwner.values());
+  unique.sort((a, b) => (b.score || 0) - (a.score || 0) || (b.timestamp || 0) - (a.timestamp || 0));
+  const top = unique.slice(0, limit);
 
   return {
     statusCode: 200,

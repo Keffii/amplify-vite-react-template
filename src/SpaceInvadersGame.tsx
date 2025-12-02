@@ -105,7 +105,7 @@ useEffect(() => {
     <View>
       <Flex direction="row" gap="1rem" wrap="nowrap" justifyContent="space-between" alignItems="flex-start">
         {/* Left Column: ESP32 Controller + Leaderboard (stacked) */}
-        <Flex direction="column" gap="1rem" style={{ width: '280px', alignItems: 'stretch' }}>
+        <Flex direction="column" gap="1rem" style={{ width: '400px', alignItems: 'stretch' }}>
           <Card
             className="themed-card"
             variation="outlined"

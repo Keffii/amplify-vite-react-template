@@ -7,11 +7,42 @@ import { graphqlIoTCoreStatus } from './functions/graphqlIoTCoreStatus/resource'
 import { buttonEventsApi } from './functions/buttonEventsApi/resource';
 import { highscoreApi } from './functions/highscoreApi/resource';
 
-defineBackend({
+import { FunctionUrlAuthType, HttpMethod } from 'aws-cdk-lib/aws-lambda';
+
+const backend = defineBackend({
   auth,
   data,
   graphqlIoTCoreButtonEvents,
   graphqlIoTCoreStatus,
   buttonEventsApi,
   highscoreApi,
+});
+
+// Add Function URLs for Grafana API access
+const buttonEventsLambda = backend.buttonEventsApi.resources.lambda;
+const buttonEventsUrl = buttonEventsLambda.addFunctionUrl({
+  authType: FunctionUrlAuthType.NONE,
+  cors: {
+    allowedOrigins: ['*'],
+    allowedMethods: [HttpMethod.GET, HttpMethod.POST, HttpMethod.ALL],
+    allowedHeaders: ['*'],
+  }
+});
+
+const highscoreLambda = backend.highscoreApi.resources.lambda;
+const highscoreUrl = highscoreLambda.addFunctionUrl({
+  authType: FunctionUrlAuthType.NONE,
+  cors: {
+    allowedOrigins: ['*'],
+    allowedMethods: [HttpMethod.GET, HttpMethod.POST, HttpMethod.ALL],
+    allowedHeaders: ['*'],
+  }
+});
+
+// Output the Function URLs
+backend.addOutput({
+  custom: {
+    buttonEventsApiUrl: buttonEventsUrl.url,
+    highscoreApiUrl: highscoreUrl.url,
+  }
 });

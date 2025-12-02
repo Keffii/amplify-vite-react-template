@@ -31,12 +31,17 @@ export const handler: APIGatewayProxyHandler = async (event): Promise<APIGateway
   console.log('API_ENDPOINT:', GRAPHQL_ENDPOINT);
   
   const qs = event.queryStringParameters || {};
-  // Grafana sends timestamps in milliseconds, convert to seconds for AWSTimestamp
-  const startTs = qs.start ? Math.floor(Number(qs.start) / 1000) : Math.floor((Date.now() - 60 * 60 * 1000) / 1000);
-  const endTs = qs.end ? Math.floor(Number(qs.end) / 1000) : Math.floor(Date.now() / 1000);
+  
+  // If no time range specified, default to last 30 days
+  const defaultStartMs = Date.now() - 30 * 24 * 60 * 60 * 1000; // 30 days ago
+  
+  // Timestamps in DB are stored in MILLISECONDS (despite a.timestamp() schema)
+  // Grafana also sends timestamps in milliseconds - so no conversion needed
+  const startTs = qs.start ? Number(qs.start) : defaultStartMs;
+  const endTs = qs.end ? Number(qs.end) : Date.now();
   const deviceId = qs.device_id;
 
-  console.log('Query params - start:', startTs, 'end:', endTs, 'deviceId:', deviceId);
+  console.log('Query params - startTs (ms):', startTs, 'endTs (ms):', endTs, 'deviceId:', deviceId);
 
   // Query without filter first to get all items, then filter client-side
   // This is more reliable with composite keys
@@ -104,8 +109,15 @@ export const handler: APIGatewayProxyHandler = async (event): Promise<APIGateway
   }
 
   console.log('Total items fetched:', items.length);
+  
+  // Debug: show first few items to understand the data format
+  if (items.length > 0) {
+    console.log('Sample items (first 3):', JSON.stringify(items.slice(0, 3)));
+    console.log('Timestamp range check - startTs:', startTs, 'endTs:', endTs);
+    console.log('First item timestamp:', items[0].timestamp, 'type:', typeof items[0].timestamp);
+  }
 
-  // Filter by timestamp range (timestamp is in seconds)
+  // Filter by timestamp range (timestamp is in MILLISECONDS in DB)
   const filteredItems = items.filter(it => {
     const ts = it.timestamp;
     const inRange = ts >= startTs && ts <= endTs;
@@ -119,9 +131,8 @@ export const handler: APIGatewayProxyHandler = async (event): Promise<APIGateway
   const rightMap: Record<number, number> = Object.create(null);
 
   for (const it of filteredItems) {
-    // Convert seconds to milliseconds for minute bucketing
-    const tsMs = it.timestamp * 1000;
-    const minute = floorToMinute(tsMs);
+    // Timestamp is already in milliseconds
+    const minute = floorToMinute(it.timestamp);
     const btn = (it.btn || '').toUpperCase();
     if (btn === 'LEFT') leftMap[minute] = (leftMap[minute] || 0) + 1;
     if (btn === 'RIGHT') rightMap[minute] = (rightMap[minute] || 0) + 1;
