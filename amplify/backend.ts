@@ -24,7 +24,10 @@ const buttonEventsUrl = buttonEventsLambda.addFunctionUrl({
   authType: FunctionUrlAuthType.NONE,
   cors: {
     allowedOrigins: ['*'],
-    allowedMethods: [HttpMethod.GET, HttpMethod.POST, HttpMethod.ALL],
+    // Use either specific methods or the wildcard ALL. Don't mix ALL with specific methods,
+    // because AWS Lambda FunctionUrl CORS rejects combining the wildcard '*' with extra fields.
+    // Use ALL to allow all methods for Grafana access.
+    allowedMethods: [HttpMethod.ALL],
     allowedHeaders: ['*'],
   }
 });
@@ -34,7 +37,8 @@ const highscoreUrl = highscoreLambda.addFunctionUrl({
   authType: FunctionUrlAuthType.NONE,
   cors: {
     allowedOrigins: ['*'],
-    allowedMethods: [HttpMethod.GET, HttpMethod.POST, HttpMethod.ALL],
+    // See note above: allow all HTTP methods for this Function URL.
+    allowedMethods: [HttpMethod.ALL],
     allowedHeaders: ['*'],
   }
 });
