@@ -148,7 +148,3 @@ export const handler: APIGatewayProxyHandler = async (event): Promise<APIGateway
     body: JSON.stringify(resp)
   };
 };
-    },
-    body: JSON.stringify(resp)
-  };
-};
