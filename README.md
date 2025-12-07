@@ -228,3 +228,11 @@ After deploying, add an inline policy to the Cognito <b>authenticated</b> role s
 <ul>
 
 ![SpaceSurvivors](https://github.com/user-attachments/assets/ebeee657-e93a-40a6-9c45-fe618c20c4cf)
+
+---
+
+<h2 align="center">Preview</h2>
+<ul>
+<img width="312" height="261" alt="Discord_events" src="https://github.com/user-attachments/assets/6ff2c7f8-ea7a-4be3-9b68-476163be764a" />
+
+
