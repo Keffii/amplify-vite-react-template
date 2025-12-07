@@ -75,37 +75,6 @@ The architecture is divided into three logical groups:
 
 ---
 
-<h2 align="center">Data Flow</h2>
-
-<h3>Real-time button input</h3>
-<pre>
-ESP32 (MQTT/TLS)
-  -> AWS IoT Core (topic: deviceId/events/button)
-    -> Browser (WebSocket subscribe via Cognito credentials)
-      -> React hook (useIoTButtonInput)
-        -> Game iframe (postMessage)
-</pre>
-
-<h3>Highscore persistence</h3>
-<pre>
-Game iframe
-  -> postMessage({ type: 'GAME_OVER', score })
-    -> React parent (SpaceInvadersGame.tsx)
-      -> AppSync mutation (HighScore.create)
-        -> DynamoDB
-          -> AppSync subscription
-            -> UI updates leaderboard
-</pre>
-
-<h3>Discord notification (optional)</h3>
-<pre>
-DynamoDB Stream or AppSync event
-  -> Lambda function
-    -> Discord Webhook
-</pre>
-
----
-
 <h2 align="center">Setup ESP32</h2>
 
 <p align="left">
