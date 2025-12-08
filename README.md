@@ -200,7 +200,7 @@ After deploying, add an inline policy to the Cognito <b>authenticated</b> role s
 
 ---
 
-<h2 align="center">Preview</h2>
+<h2 align="center">Discord Webhook/h2>
 <ul>
 <img width="312" height="261" alt="Discord_events" src="https://github.com/user-attachments/assets/6ff2c7f8-ea7a-4be3-9b68-476163be764a" />
 
