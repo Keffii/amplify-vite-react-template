@@ -176,7 +176,8 @@ The Grafana dashboard provides insight into the current leaderboard which is top
 
 ![Discord Events](https://github.com/user-attachments/assets/6ff2c7f8-ea7a-4be3-9b68-476163be764a)
 
-The Discord webhook integration shows connected/disconnected status when a player connects their ESP32.
+Discord webhook integration shows connected/disconnected status message when a player connects their ESP32.
+
 ---
 
 ## Scalability
